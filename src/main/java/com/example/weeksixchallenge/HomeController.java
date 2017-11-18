@@ -1,32 +1,25 @@
 package com.example.weeksixchallenge;
 
-import com.example.weeksixchallenge.AccountHolderRepository;
-import com.example.weeksixchallenge.EmployeeRepository;
-import com.example.weeksixchallenge.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
 public class HomeController {
 
     @Autowired
-    AccountHolderRepository accountHolderRepository;
+    UserInfoRepository userInfoRepository;
 
     @Autowired
-    EmployeeRepository employeeRepository;
+    UserDataRepository userDataRepository;
 
     @RequestMapping("/")
-    public String index(){
-        return "form";
+    public String form(){
+        return "home";
     }
 
     @RequestMapping("/login")
@@ -35,16 +28,36 @@ public class HomeController {
     }
 
     @RequestMapping("/list")
-    public String listRooms(Model model) {
-        model.addAttribute("accountholder", accountHolderRepository.findAll());
+    public String list(Model model) {
+        model.addAttribute("accountholder", userInfoRepository.findAll());
         return "list";
+    }
+
+    @RequestMapping(value="/register", method = RequestMethod.GET)
+    public String showRegistrationPage(Model model){
+        model.addAttribute("accountholder", new UserInfo ());
+        return "registration";
+    }
+
+    @RequestMapping(value="/register", method = RequestMethod.POST)
+    public String processRegistrationPage(@Valid @ModelAttribute("accountholder") UserInfo user,
+            BindingResult result,
+            Model model){
+
+        model.addAttribute("accountholder", user);
+
+        if (result.hasErrors()) {
+            return "registration";
+        } else {
+            userInfoRepository.save(user);
+            model.addAttribute("message", "User Account Successfully Created");
+        }
+        return "login";
     }
 
     @GetMapping("/accountholder")
     public String addRoom(Model model){
-
         model.addAttribute("accountholder", new UserData ());
-
         return "form";
 
     }
@@ -54,20 +67,24 @@ public class HomeController {
         if (result.hasErrors()) {
             return "form";
         }
-
-        accountHolderRepository.save(userData);
+        System.out.println (userData.getId () );
+        System.out.println (userData.getAcctNumber () );
+        System.out.println (userData.getAction () );
+        System.out.println (userData.getAmount () );
+        System.out.println (userData.getReason () );
+        userDataRepository.save(userData);
         return "redirect:/accountholder";
     }
 
     @RequestMapping("/detail/{id}")
-    public String showPet(@PathVariable("id") long id, Model model) {
-        model.addAttribute("accountholder", accountHolderRepository.findOne(id));
+    public String showAccount(@PathVariable("id") long id, Model model) {
+        model.addAttribute("accountholder", userDataRepository.findOne(id));
         return "show";
     }
 
     @RequestMapping("/update/{id}")
-    public String updatePet(@PathVariable("id") long id, Model model) {
-        model.addAttribute("accountholder", accountHolderRepository.findOne(id));
+    public String updateAccount(@PathVariable("id") long id, Model model) {
+        model.addAttribute("accountholder", userDataRepository.findOne(id));
         return "form";
     }
 }

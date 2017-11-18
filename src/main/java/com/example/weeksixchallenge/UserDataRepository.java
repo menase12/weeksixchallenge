@@ -2,10 +2,10 @@ package com.example.weeksixchallenge;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface EmployeeRepository  extends CrudRepository<UserData, Long> {
-//        UserData findByUsername(String username);
+public interface UserDataRepository extends CrudRepository<UserData, Long> {
+//        UserInfo findByUsername(String username);
 //
-//        UserData findByEmail(String email);
+//        UserInfo findByEmail (String email);
 //
 //        Long countByEmail(String email);
 //

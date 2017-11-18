@@ -15,17 +15,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception{
         http
                 .authorizeRequests()
+                .antMatchers ( "/" ).access ( "hasAuthority('USER') or hasAuthority ('ADMIN')")
+                .antMatchers ( "/admin" ).access ( "hasAuthority('ADMIN')" )
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").permitAll()
-                .and().httpBasic();
+                .formLogin().loginPage("/login").permitAll();
+        http
+                .csrf ().disable ();
+        http
+                .headers ().frameOptions ().disable ();
         }
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 
-            auth.inMemoryAuthentication().withUser("YonatanZewde").password("beastmaster").roles("USER");
-
+            auth.inMemoryAuthentication().withUser("user").password("password").authorities ( "USER" ).and()
+                    .withUser ( "yonatan" ).password ( "yonatan" ).authorities ( "ADMIN");
         }
 }
 
